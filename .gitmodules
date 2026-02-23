@@ -1,0 +1,6 @@
+[submodule "pcb/footprints/kicad-libraries"]
+	path = pcb/footprints/kicad-libraries
+	url = https://github.com/sszczep/kicad-libraries.git
+[submodule "pcb/footprints/KiCad-SSD1306-128x64"]
+	path = pcb/footprints/KiCad-SSD1306-128x64
+	url = https://github.com/pforrmi/KiCad-SSD1306-128x64
