@@ -492,7 +492,7 @@
       "plot": "",
       "pos_files": "",
       "specctra_dsn": "../../../../../console.dsn",
-      "step": "",
+      "step": "console.step",
       "svg": "",
       "vrml": ""
     },

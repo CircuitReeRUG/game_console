@@ -1479,6 +1479,17 @@
 			(uuid "441f0a76-341c-4525-a9f1-cfa7faa2aa04")
 		)
 		(embedded_fonts no)
+		(model "/home/boyan/Projects/uni-related/game_console/pcb/footprints/KiCad-SSD1306-128x64/SSD1306_OLED_Display(128x64).step"
+			(offset
+				(xyz 0 -1 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz -0 -0 -0)
+			)
+		)
 	)
 	(footprint "footprints:MODULE_RP2040-ZERO"
 		(layer "B.Cu")
