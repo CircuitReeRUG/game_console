@@ -5,32 +5,28 @@ name tbd
 
 ```mermaid
 flowchart TD
-    SD[(SD Card)]
+    SD[(SD Card\nFAT32)]
 
-    subgraph System ["Core System"]
-        Loader["Loader<br/>(@saraanabota, @KrisPuusepp)<br/>- Polls SD card periodically<br/>- loads new game images"]
-        PeriphAPI["Periph API<br/>(@confestim, @MrDragonMister)<br/>- End-user interface<br/>- Manages OLED & Buttons"]
+    subgraph Core0 ["Core 0 -- Bootloader"]
+        Menu["Menu\n- Lists .bin files from SD\n- Selects & launches game"]
+        Overlay["Overlay Loop\n- Monitors A+B+UP\n- Kills game, returns to menu"]
+        HAL["HAL\n- draw_pixel()\n- read_input()"]
     end
 
-    subgraph UserSpace ["User Programs"]
-        Snake["Snake game (Example)<br/>(@justtryingthingsout, @PatrickGM1)"]
-        OtherGames["User game"]
+    subgraph Core1 ["Core 1 -- User Game"]
+        Game["Game Binary\n- Loaded into RAM @ 0x20010000\n- Owns its own loop\n- Calls HAL only"]
     end
 
     subgraph Hardware ["Peripherals"]
-        OLED[OLED Display]
+        OLED["OLED Display\n(mutex-guarded)"]
         BTN[Buttons]
     end
 
-    SD -.->|Polled every n seconds| Loader
-    Loader -->|Loads & Executes| Snake
-    Loader -->|Loads & Executes| OtherGames
-    
-    Snake -->|Calls| PeriphAPI
-    OtherGames -->|Calls| PeriphAPI
-    
-    Loader -->|Uses| PeriphAPI
-    
-    PeriphAPI -->|Draws to| OLED
-    PeriphAPI -->|Reads state| BTN
+    SD -->|"Read once at launch"| Menu
+    Menu -->|"memcpy to 0x20010000\npush addr via FIFO"| Game
+    Menu -->|"starts"| Overlay
+    Overlay -->|"rp2040.restartCore1()\non A+B+UP"| Game
+    Game -->|"calls"| HAL
+    HAL -->|"drawPixel()"| OLED
+    HAL -->|"reads"| BTN
 ```
