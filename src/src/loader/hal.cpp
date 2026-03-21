@@ -1,27 +1,45 @@
 #include "loader/boot.h"
 
-const HAL *volatile game_hal = nullptr;
+volatile bool game_running = false;
+
+namespace {
+Oled* g_oled = nullptr;
+}
 
 HAL Bootloader::create_hal() {
-  hal.ctx = this;
-  // TODO: have core 0 own all rendering and core 1 just submits draw commands
-  hal.draw_pixel = [](void *ctx, int x, int y, uint16_t whiteness) {
-    Bootloader *bootloader = (Bootloader *)ctx;
-    bootloader->oled.drawPixel(x, y, whiteness);
+  g_oled = &oled;
+
+  HAL h = {};
+
+  h.draw_pixel = [](int x, int y, uint16_t color) {
+    g_oled->drawPixel(x, y, color);
   };
 
-  hal.read_input = [](void *ctx) -> KeyState {
-    Bootloader *bootloader = (Bootloader *)ctx;
-    KeyState state = {
-        .up = bootloader->pressed(PIN_UP),
-        .down = bootloader->pressed(PIN_DOWN),
-        .left = bootloader->pressed(PIN_LEFT),
-        .right = bootloader->pressed(PIN_RIGHT),
-        .a = bootloader->pressed(PIN_BTN_A),
-        .b = bootloader->pressed(PIN_BTN_B)
-        };
-    return state;
+  h.clear_screen = []() {
+    g_oled->clear();
   };
 
-  return hal;
+  h.render = []() {
+    g_oled->render();
+  };
+
+  h.read_input = []() -> KeyState {
+    return {
+        digitalRead(PIN_UP) == LOW,
+        digitalRead(PIN_DOWN) == LOW,
+        digitalRead(PIN_LEFT) == LOW,
+        digitalRead(PIN_RIGHT) == LOW,
+        digitalRead(PIN_BTN_A) == LOW,
+        digitalRead(PIN_BTN_B) == LOW
+    };
+  };
+
+  h.delay_ms = [](uint32_t ms) {
+    delay(ms);
+  };
+
+  h.screen_width = 128;
+  h.screen_height = 64;
+
+  return h;
 }
