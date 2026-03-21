@@ -124,14 +124,21 @@ void Oled::drawPixel(int x, int y, uint16_t whiteness) {
 
 void Oled::flush() {
     lock();
-    display.clearDisplay();
-    display.setCursor(0, 0);
     display.display();
     unlock();
 }
 
 void Oled::clear() {
-    flush();
+    lock();
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    unlock();
+}
+
+void Oled::render() {
+    lock();
+    display.display();
+    unlock();
 }
 
 void Oled::show_image(bool show) {
@@ -145,7 +152,6 @@ void Oled::show_image(bool show) {
 size_t Oled::write(uint8_t byte) {
     lock();
     display.write(byte);
-    if (byte == '\n') display.display();
     unlock();
     return 1;
 }
@@ -153,7 +159,6 @@ size_t Oled::write(uint8_t byte) {
 size_t Oled::print(const String& msg) {
     lock();
     display.print(msg);
-    display.display();
     unlock();
     return msg.length();
 }
@@ -161,7 +166,6 @@ size_t Oled::print(const String& msg) {
 size_t Oled::println(const String& msg) {
     lock();
     display.println(msg);
-    display.display();
     unlock();
     return msg.length() + 1;
 }
