@@ -38,6 +38,28 @@ HAL Bootloader::createHal() {
     delay(ms);
   };
 
+  h.sdRead = [](const char* path, uint8_t* buf, uint32_t offset, uint32_t len) -> int {
+    File f = SD.open(path, FILE_READ);
+    if (!f)
+      return -1;
+    if (!f.seek(offset)) { 
+      f.close();
+      return -1;
+    }
+    int n = f.read(buf, len);
+    f.close();
+    return n;
+  };
+
+  h.sdWrite = [](const char* path, const uint8_t* buf, uint32_t len) -> int {
+    File f = SD.open(path, FILE_WRITE);
+    if (!f)
+      return -1;
+    int n = f.write(buf, len);
+    f.close();
+    return n;
+  };
+
   h.screenWidth = 128;
   h.screenHeight = 64;
 
