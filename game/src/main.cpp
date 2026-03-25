@@ -1,4 +1,5 @@
 #include "game.h"
+#include "util.h"
 
 // do not touch this function
 // it does some funky linker shit
