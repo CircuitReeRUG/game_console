@@ -59,6 +59,10 @@ HAL Bootloader::createHal() {
     f.close();
     return n;
   };
+  
+  h.getTime = []() -> absolute_time_t {
+    return get_absolute_time();
+  };
 
   h.screenWidth = 128;
   h.screenHeight = 64;
